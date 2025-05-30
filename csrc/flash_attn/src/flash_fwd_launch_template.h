@@ -85,6 +85,12 @@ void run_flash_fwd(Flash_fwd_params &params, cudaStream_t stream) {
                             // cudaError status_ = cudaOccupancyMaxActiveBlocksPerMultiprocessor(
                             //     &ctas_per_sm, kernel, Kernel_traits::kNThreads, smem_size);
                             // printf("smem_size = %d, CTAs per SM = %d\n", int(smem_size), ctas_per_sm);
+
+                            auto dim3_grid = grid;
+                            auto dim3_block = dim3{Kernel_traits::kNThreads};
+                            printf("kenny run_flash_fwd flash_fwd_kernel: grid.x = %d, grid.y = %d, grid.z = %d\n", dim3_grid.x, dim3_grid.y, dim3_grid.z);
+                            printf("kenny run_flash_fwd flash_fwd_kernel: block.x = %d, block.y = %d, block.z = %d\n", dim3_block.x, dim3_block.y, dim3_block.z);
+
                             kernel<<<grid, Kernel_traits::kNThreads, smem_size, stream>>>(params);
                             C10_CUDA_KERNEL_LAUNCH_CHECK();
                         });
@@ -121,6 +127,12 @@ void run_flash_splitkv_fwd(Flash_fwd_params &params, cudaStream_t stream) {
                                     C10_CUDA_CHECK(cudaFuncSetAttribute(
                                         kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, smem_size));
                                 }
+
+                                auto dim3_grid = grid;
+                                auto dim3_block = dim3{Kernel_traits::kNThreads};
+                                printf("kenny run_flash_splitkv_fwd flash_fwd_splitkv_kernel: grid.x = %d, grid.y = %d, grid.z = %d\n", dim3_grid.x, dim3_grid.y, dim3_grid.z);
+                                printf("kenny run_flash_splitkv_fwd flash_fwd_splitkv_kernel: block.x = %d, block.y = %d, block.z = %d\n", dim3_block.x, dim3_block.y, dim3_block.z);
+
                                 kernel<<<grid, Kernel_traits::kNThreads, smem_size, stream>>>(params);
                                 C10_CUDA_KERNEL_LAUNCH_CHECK();
                             });
@@ -136,6 +148,12 @@ void run_flash_splitkv_fwd(Flash_fwd_params &params, cudaStream_t stream) {
         // If headdim is divisible by 64, then we set kBlockM = 8, etc.
         constexpr static int kBlockM = Kernel_traits::kHeadDim % 128 == 0 ? 4 : (Kernel_traits::kHeadDim % 64 == 0 ? 8 : 16);
         dim3 grid_combine((params.b * params.h * params.seqlen_q + kBlockM - 1) / kBlockM);
+
+        auto dim3_grid = grid_combine;
+        auto dim3_block = dim3{Kernel_traits::kNThreads};
+        printf("kenny run_flash_splitkv_fwd flash_fwd_splitkv_combine_kernel : grid.x = %d, grid.y = %d, grid.z = %d\n", dim3_grid.x, dim3_grid.y, dim3_grid.z);
+        printf("kenny run_flash_splitkv_fwd flash_fwd_splitkv_combine_kernel: block.x = %d, block.y = %d, block.z = %d\n", dim3_block.x, dim3_block.y, dim3_block.z);
+
         EVENK_SWITCH(is_even_K, IsEvenKConst, [&] {
             if (params.num_splits <= 2) {
                 flash_fwd_splitkv_combine_kernel<Kernel_traits, kBlockM, 1, IsEvenKConst><<<grid_combine, Kernel_traits::kNThreads, 0, stream>>>(params);
