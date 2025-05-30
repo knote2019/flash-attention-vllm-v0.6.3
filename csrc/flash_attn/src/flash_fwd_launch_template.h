@@ -88,8 +88,8 @@ void run_flash_fwd(Flash_fwd_params &params, cudaStream_t stream) {
 
                             auto dim3_grid = grid;
                             auto dim3_block = dim3{Kernel_traits::kNThreads};
-                            printf("kenny run_flash_fwd flash_fwd_kernel: grid.x = %d, grid.y = %d, grid.z = %d\n", dim3_grid.x, dim3_grid.y, dim3_grid.z);
-                            printf("kenny run_flash_fwd flash_fwd_kernel: block.x = %d, block.y = %d, block.z = %d\n", dim3_block.x, dim3_block.y, dim3_block.z);
+                            printf("kenny flash_fwd_kernel: grid.x = %d, grid.y = %d, grid.z = %d\n", dim3_grid.x, dim3_grid.y, dim3_grid.z);
+                            printf("kenny flash_fwd_kernel: block.x = %d, block.y = %d, block.z = %d\n", dim3_block.x, dim3_block.y, dim3_block.z);
 
                             kernel<<<grid, Kernel_traits::kNThreads, smem_size, stream>>>(params);
                             C10_CUDA_KERNEL_LAUNCH_CHECK();
@@ -130,8 +130,8 @@ void run_flash_splitkv_fwd(Flash_fwd_params &params, cudaStream_t stream) {
 
                                 auto dim3_grid = grid;
                                 auto dim3_block = dim3{Kernel_traits::kNThreads};
-                                printf("kenny run_flash_splitkv_fwd flash_fwd_splitkv_kernel: grid.x = %d, grid.y = %d, grid.z = %d\n", dim3_grid.x, dim3_grid.y, dim3_grid.z);
-                                printf("kenny run_flash_splitkv_fwd flash_fwd_splitkv_kernel: block.x = %d, block.y = %d, block.z = %d\n", dim3_block.x, dim3_block.y, dim3_block.z);
+                                printf("kenny flash_fwd_splitkv_kernel: grid.x = %d, grid.y = %d, grid.z = %d\n", dim3_grid.x, dim3_grid.y, dim3_grid.z);
+                                printf("kenny flash_fwd_splitkv_kernel: block.x = %d, block.y = %d, block.z = %d\n", dim3_block.x, dim3_block.y, dim3_block.z);
 
                                 kernel<<<grid, Kernel_traits::kNThreads, smem_size, stream>>>(params);
                                 C10_CUDA_KERNEL_LAUNCH_CHECK();
@@ -151,8 +151,8 @@ void run_flash_splitkv_fwd(Flash_fwd_params &params, cudaStream_t stream) {
 
         auto dim3_grid = grid_combine;
         auto dim3_block = dim3{Kernel_traits::kNThreads};
-        printf("kenny run_flash_splitkv_fwd flash_fwd_splitkv_combine_kernel : grid.x = %d, grid.y = %d, grid.z = %d\n", dim3_grid.x, dim3_grid.y, dim3_grid.z);
-        printf("kenny run_flash_splitkv_fwd flash_fwd_splitkv_combine_kernel: block.x = %d, block.y = %d, block.z = %d\n", dim3_block.x, dim3_block.y, dim3_block.z);
+        printf("kenny flash_fwd_splitkv_combine_kernel : grid.x = %d, grid.y = %d, grid.z = %d\n", dim3_grid.x, dim3_grid.y, dim3_grid.z);
+        printf("kenny flash_fwd_splitkv_combine_kernel: block.x = %d, block.y = %d, block.z = %d\n", dim3_block.x, dim3_block.y, dim3_block.z);
 
         EVENK_SWITCH(is_even_K, IsEvenKConst, [&] {
             if (params.num_splits <= 2) {
