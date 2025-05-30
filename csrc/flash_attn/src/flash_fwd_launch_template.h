@@ -86,10 +86,8 @@ void run_flash_fwd(Flash_fwd_params &params, cudaStream_t stream) {
                             //     &ctas_per_sm, kernel, Kernel_traits::kNThreads, smem_size);
                             // printf("smem_size = %d, CTAs per SM = %d\n", int(smem_size), ctas_per_sm);
 
-                            auto dim3_grid = grid;
-                            auto dim3_block = dim3{Kernel_traits::kNThreads};
-                            printf("kenny flash_fwd_kernel: grid.x = %d, grid.y = %d, grid.z = %d\n", dim3_grid.x, dim3_grid.y, dim3_grid.z);
-                            printf("kenny flash_fwd_kernel: block.x = %d, block.y = %d, block.z = %d\n", dim3_block.x, dim3_block.y, dim3_block.z);
+                            printf("kenny flash_fwd_kernel: grid.x = %d, grid.y = %d, grid.z = %d\n", grid.x, grid.y, grid.z);
+                            printf("kenny flash_fwd_kernel: block.x = %d, block.y = %d, block.z = %d\n", Kernel_traits::kNThreads, 1, 1);
 
                             printf("kenny flash_fwd_kernel: params.seqlen_q = %d, params.b = %d, params.h = %d, params.d = %d\n", params.seqlen_q, params.b, params.h, params.d);
                             printf("kenny flash_fwd_kernel: Kernel_traits.kBlockM = %d, Kernel_traits.kBlockN = %d, Kernel_traits.kHeadDim = %d\n", Kernel_traits::kBlockM, Kernel_traits::kBlockM, Kernel_traits::kHeadDim);
@@ -131,10 +129,8 @@ void run_flash_splitkv_fwd(Flash_fwd_params &params, cudaStream_t stream) {
                                         kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, smem_size));
                                 }
 
-                                auto dim3_grid = grid;
-                                auto dim3_block = dim3{Kernel_traits::kNThreads};
-                                printf("kenny flash_fwd_splitkv_kernel: grid.x = %d, grid.y = %d, grid.z = %d\n", dim3_grid.x, dim3_grid.y, dim3_grid.z);
-                                printf("kenny flash_fwd_splitkv_kernel: block.x = %d, block.y = %d, block.z = %d\n", dim3_block.x, dim3_block.y, dim3_block.z);
+                                printf("kenny flash_fwd_splitkv_kernel: grid.x = %d, grid.y = %d, grid.z = %d\n", grid.x, grid.y, grid.z);
+                                printf("kenny flash_fwd_splitkv_kernel: block.x = %d, block.y = %d, block.z = %d\n", Kernel_traits::kNThreads, 1, 1);
 
                                 printf("kenny flash_fwd_splitkv_kernel: params.seqlen_q = %d, params.b = %d, params.h = %d, params.d = %d\n", params.seqlen_q, params.b, params.h, params.d);
                                 printf("kenny flash_fwd_splitkv_kernel: Kernel_traits.kBlockM = %d, Kernel_traits.kBlockN = %d, Kernel_traits.kHeadDim = %d\n", Kernel_traits::kBlockM, Kernel_traits::kBlockM, Kernel_traits::kHeadDim);
@@ -155,10 +151,8 @@ void run_flash_splitkv_fwd(Flash_fwd_params &params, cudaStream_t stream) {
         constexpr static int kBlockM = Kernel_traits::kHeadDim % 128 == 0 ? 4 : (Kernel_traits::kHeadDim % 64 == 0 ? 8 : 16);
         dim3 grid_combine((params.b * params.h * params.seqlen_q + kBlockM - 1) / kBlockM);
 
-        auto dim3_grid = grid_combine;
-        auto dim3_block = dim3{Kernel_traits::kNThreads};
-        printf("kenny flash_fwd_splitkv_combine_kernel: grid.x = %d, grid.y = %d, grid.z = %d\n", dim3_grid.x, dim3_grid.y, dim3_grid.z);
-        printf("kenny flash_fwd_splitkv_combine_kernel: block.x = %d, block.y = %d, block.z = %d\n", dim3_block.x, dim3_block.y, dim3_block.z);
+        printf("kenny flash_fwd_splitkv_combine_kernel: grid.x = %d, grid.y = %d, grid.z = %d\n", grid_combine.x, grid_combine.y, grid_combine.z);
+        printf("kenny flash_fwd_splitkv_combine_kernel: block.x = %d, block.y = %d, block.z = %d\n", Kernel_traits::kNThreads, 1, 1);
 
         printf("kenny flash_fwd_splitkv_combine_kernel: params.seqlen_q = %d, params.b = %d, params.h = %d, params.d = %d\n", params.seqlen_q, params.b, params.h, params.d);
         printf("kenny flash_fwd_splitkv_combine_kernel: Kernel_traits.kBlockM = %d, Kernel_traits.kBlockN = %d, Kernel_traits.kHeadDim = %d\n", Kernel_traits::kBlockM, Kernel_traits::kBlockM, Kernel_traits::kHeadDim);
